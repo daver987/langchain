@@ -30,7 +30,10 @@ class BraveSearchWrapper(BaseModel):
             {
                 "title": item.get("title"),
                 "link": item.get("url"),
-                "snippet": item.get("description"),
+                "snippet": " ".join(filter(None, [
+                    item.get("description"),
+                    *item.get("extra_snippets", [])
+                ])),
             }
             for item in web_search_results
         ]
@@ -48,7 +51,10 @@ class BraveSearchWrapper(BaseModel):
         results = self._search_request(query)
         return [
             Document(
-                page_content=item.get("description"),  # type: ignore[arg-type]
+                page_content=" ".join(filter(None, [
+                    item.get("description"),
+                    *item.get("extra_snippets", [])
+                ])),
                 metadata={"title": item.get("title"), "link": item.get("url")},
             )
             for item in results
